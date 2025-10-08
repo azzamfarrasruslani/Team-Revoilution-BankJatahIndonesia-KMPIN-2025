@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🌱 Bank Jatah Indonesia – Digitalisasi Pengelolaan Minyak Jelantah Berbasis E-Wallet & QR Code
 
-## Getting Started
+🚀 **Repositori Resmi Tim Revoilution - KMPIN 2025**  
+Website: [Bank Jatah Indonesia](https://github.com/azzamfarrasruslani/bankjatahindonesia)  
+Tim: Teguh Al Azizul • Azzam Farras Ruslani • Tengku Muhammad Hadin Nazmi  
+Program Studi: Teknik Informatika
 
-First, run the development server:
+---
+
+## 🧠 Tentang Proyek
+
+**Bank Jatah Indonesia** adalah platform website inovatif yang dikembangkan oleh **Tim Revoilution** untuk menjawab permasalahan pencemaran minyak jelantah melalui pendekatan **teknologi digital berbasis TIK**.
+
+Proyek ini dikembangkan untuk **Kompetisi Mahasiswa Nasional Cipta Inovasi Teknologi Informasi (KMPIN 2025)** dan mengusung sistem:
+
+- 🔐 **Dompet digital (E-Wallet)** untuk menyimpan hasil penukaran minyak secara otomatis.  
+- 📲 **Transaksi QR Code** untuk setoran dan pembelanjaan.  
+- 🎁 **Sistem Reward & Poin** untuk mendorong partisipasi masyarakat.  
+- 📦 **Fitur Tracking Setoran** agar proses transparan dan real-time.  
+
+Platform ini mendigitalisasi proses pengumpulan dan penukaran minyak jelantah, yang selama ini masih bersifat manual dan kurang efisien, menjadi sistem modern yang **efisien, transparan, dan berkelanjutan**.
+
+---
+
+## 🎯 Tujuan Inovasi
+
+- Mengurangi pencemaran minyak jelantah yang mencemari air dan tanah  
+- Mendorong masyarakat menukarkan minyak jelantah melalui sistem digital  
+- Memberikan nilai ekonomi dari limbah rumah tangga  
+- Mewujudkan ekonomi sirkular berbasis teknologi informasi  
+
+---
+
+## 📸 Tampilan Utama
+
+| Dashboard | Setor Minyak | E-Wallet | Reward & Validasi |
+|----------|--------------|----------|--------------------|
+| ![Dashboard](https://via.placeholder.com/200x120.png?text=Dashboard) | ![Setor](https://via.placeholder.com/200x120.png?text=Setor+Minyak) | ![Wallet](https://via.placeholder.com/200x120.png?text=E-Wallet) | ![Validasi](https://via.placeholder.com/200x120.png?text=Reward+%26+Validasi) |
+
+> *Silakan akses prototipe lengkap dan kode sumber melalui link repositori di bawah.*
+
+---
+
+## 🛠️ Teknologi yang Digunakan
+
+- 🌐 **Next.js** – Framework React modern untuk front-end  
+- 🔐 **Supabase** – Backend as a Service (PostgreSQL, Auth, API)  
+- ⚙️ **Tailwind CSS** – Styling cepat dan responsif  
+- 🔄 **REST API Integration** – Sinkronisasi data dan transaksi  
+- 🧪 **Testing & Prototyping** – Figma, Postman  
+
+---
+
+## 📁 Repositori Proyek
+
+🔗 [https://github.com/azzamfarrasruslani/bankjatahindonesia](https://github.com/azzamfarrasruslani/bankjatahindonesia)
+
+Silakan *clone*, *fork*, atau *buka issue* untuk kontribusi.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+git clone https://github.com/azzamfarrasruslani/bankjatahindonesia.git
