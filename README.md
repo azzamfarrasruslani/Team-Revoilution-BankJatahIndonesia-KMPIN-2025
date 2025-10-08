@@ -1,4 +1,4 @@
-![Poster Tim Revoilution](https://raw.githubusercontent.com/azzamfarrasruslani/bankjatahindonesia/main/Poster_Team_Revoilution.png)
+![Poster Tim Revoilution](https://raw.githubusercontent.com/azzamfarrasruslani/Team-Revoilution-BankJatahIndonesia-KMPIN-2025/main/Poster_Team_Revoilution.png)
 
 # 🌱 Bank Jatah Indonesia – Digitalisasi Pengelolaan Minyak Jelantah Berbasis E-Wallet & QR Code
 
