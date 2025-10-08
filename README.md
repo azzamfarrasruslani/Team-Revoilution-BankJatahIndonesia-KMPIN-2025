@@ -1,7 +1,7 @@
 # 🌱 Bank Jatah Indonesia – Digitalisasi Pengelolaan Minyak Jelantah Berbasis E-Wallet & QR Code
 
 🚀 **Repositori Resmi Tim Revoilution - KMPIN 2025**  
-Website: [Bank Jatah Indonesia](https://github.com/azzamfarrasruslani/bankjatahindonesia)  
+Website: [Bank Jatah Indonesia](https://bankjatahindonesia.vercel.app/)  
 Tim: Teguh Al Azizul • Azzam Farras Ruslani • Tengku Muhammad Hadin Nazmi  
 Program Studi: Teknik Informatika
 
@@ -44,10 +44,10 @@ Platform ini mendigitalisasi proses pengumpulan dan penukaran minyak jelantah, y
 ## 🛠️ Teknologi yang Digunakan
 
 - 🌐 **Next.js** – Framework React modern untuk front-end  
-- 🔐 **Supabase** – Backend as a Service (PostgreSQL, Auth, API)  
+<!-- - 🔐 **Supabase** – Backend as a Service (PostgreSQL, Auth, API)  
 - ⚙️ **Tailwind CSS** – Styling cepat dan responsif  
 - 🔄 **REST API Integration** – Sinkronisasi data dan transaksi  
-- 🧪 **Testing & Prototyping** – Figma, Postman  
+- 🧪 **Testing & Prototyping** – Figma, Postman   -->
 
 ---
 
