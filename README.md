@@ -1,3 +1,11 @@
+## 📄 Dokumen Penting Tim Revoilution – KMPIN 2025
+
+📝 **[Surat Pernyataan Orisinalitas Karya - Tim Revoilution](https://github.com/azzamfarrasruslani/Team-Revoilution-BankJatahIndonesia-KMPIN-2025/blob/main/Surat%20Pernyataan%20Orisinalitas%20Karya%20-%20Tim%20Revoilution.jpeg)**  
+📌 **[Bukti Transfer Tim Revoilution - PCR](https://github.com/azzamfarrasruslani/Team-Revoilution-BankJatahIndonesia-KMPIN-2025/blob/main/Bukti%20TF%20Tim%20Revoilution%20-%20PCR.pdf)**  
+📊 **[PPT Presentasi Tim Revoilution](https://github.com/azzamfarrasruslani/Team-Revoilution-BankJatahIndonesia-KMPIN-2025/blob/main/Ptt%20Team%20Revoilution.pdf)**
+
+---
+
 ![Poster Tim Revoilution](https://raw.githubusercontent.com/azzamfarrasruslani/Team-Revoilution-BankJatahIndonesia-KMPIN-2025/main/Poster_Team_Revoilution.png)
 
 # 🌱 Bank Jatah Indonesia – Digitalisasi Pengelolaan Minyak Jelantah Berbasis E-Wallet & QR Code
@@ -15,10 +23,10 @@ Program Studi: Teknik Informatika
 
 Proyek ini dikembangkan untuk **Kompetisi Mahasiswa Nasional Cipta Inovasi Teknologi Informasi (KMPIN 2025)** dan mengusung sistem:
 
-- 🔐 **Dompet digital (E-Wallet)** untuk menyimpan hasil penukaran minyak secara otomatis.  
-- 📲 **Transaksi QR Code** untuk setoran dan pembelanjaan.  
-- 🎁 **Sistem Reward & Poin** untuk mendorong partisipasi masyarakat.  
-- 📦 **Fitur Tracking Setoran** agar proses transparan dan real-time.  
+- 🔐 **Dompet digital (E-Wallet)** untuk menyimpan hasil penukaran minyak secara otomatis  
+- 📲 **Transaksi QR Code** untuk setoran dan pembelanjaan  
+- 🎁 **Sistem Reward & Poin** untuk mendorong partisipasi masyarakat  
+- 📦 **Fitur Tracking Setoran** agar proses transparan dan real-time  
 
 Platform ini mendigitalisasi proses pengumpulan dan penukaran minyak jelantah, yang selama ini masih bersifat manual dan kurang efisien, menjadi sistem modern yang **efisien, transparan, dan berkelanjutan**.
 
