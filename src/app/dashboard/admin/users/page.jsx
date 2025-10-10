@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
 
-import { UserTable } from "./UserTable";
-import { UserDetailDialog } from "./UserDetailDialog";
-import { UserFormDialog } from "./UserFormDialog";
+import { UserTable } from "./components/UserTable";
+import { UserDetailDialog } from "./components/UserDetailDialog";
+import { UserFormDialog } from "./components/UserFormDialog";
 
 export default function UsersPage() {
   const [users, setUsers] = useState([]);

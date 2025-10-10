@@ -43,8 +43,8 @@ export default function Sidebar({ sidebarOpen, onClose, role, session }) {
     {
       label: "Setor Minyak",
       icon: UploadCloud,
-      href: "/dashboard/setor",
-      roles: ["unit_bisnis"],
+      href: "/dashboard/unit_bisnis/setor-minyak",
+      roles: ["unit_bisnis", "admin"],
     },
     {
       label: "Wallet",
@@ -58,12 +58,12 @@ export default function Sidebar({ sidebarOpen, onClose, role, session }) {
       href: "/dashboard/mitra",
       roles: ["pelanggan"],
     },
-    {
-      label: "Validasi",
-      icon: ShieldCheck,
-      href: "/dashboard/validasi",
-      roles: ["admin", "unit_bisnis"],
-    },
+    // {
+    //   label: "Validasi",
+    //   icon: ShieldCheck,
+    //   href: "/dashboard/validasi",
+    //   roles: ["admin", "unit_bisnis"],
+    // },
     {
       label: "Tukar Poin",
       icon: Gift,
@@ -86,6 +86,12 @@ export default function Sidebar({ sidebarOpen, onClose, role, session }) {
       label: "Kelola User",
       icon: Users,
       href: "/dashboard/admin/users",
+      roles: ["admin"],
+    },
+    {
+      label: "Kelola Setoran Minyak",
+      icon: Layers, 
+      href: "/dashboard/admin/setoran",
       roles: ["admin"],
     },
   ];
