@@ -1,41 +1,63 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabaseClient";
 import { Button } from "@/components/ui/button";
+
 import { UserTable } from "./UserTable";
-import { UserForm } from "./UserForm";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { UserDetailDialog } from "./UserDetailDialog";
+import { UserFormDialog } from "./UserFormDialog";
 
 export default function UsersPage() {
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedUser, setSelectedUser] = useState(null);
   const [openForm, setOpenForm] = useState(false);
-  const [editUser, setEditUser] = useState(null);
+  const [openDetail, setOpenDetail] = useState(false);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from("users").select("*").order("created_at", { ascending: false });
+    if (error) console.error(error);
+    else setUsers(data);
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const handleEdit = (user) => {
-    setEditUser(user);
+    setSelectedUser(user);
     setOpenForm(true);
+  };
+
+  const handleDetail = (user) => {
+    setSelectedUser(user);
+    setOpenDetail(true);
   };
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Kelola User</h1>
-        <Button onClick={() => { setEditUser(null); setOpenForm(true); }}>
-          Tambah User
-        </Button>
+        <Button onClick={() => { setSelectedUser(null); setOpenForm(true); }}>Tambah User</Button>
       </div>
 
-      <div className="bg-white shadow rounded-lg p-4">
-        <UserTable onEdit={handleEdit} />
-      </div>
+      <UserTable users={users} loading={loading} onEdit={handleEdit} onDetail={handleDetail} />
 
-      <Dialog open={openForm} onOpenChange={setOpenForm}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{editUser ? "Edit User" : "Tambah User"}</DialogTitle>
-          </DialogHeader>
-          <UserForm user={editUser} onClose={() => setOpenForm(false)} />
-        </DialogContent>
-      </Dialog>
+      <UserFormDialog
+        user={selectedUser}
+        open={openForm}
+        onOpenChange={setOpenForm}
+        onSuccess={() => fetchUsers()}
+      />
+
+      <UserDetailDialog
+        user={selectedUser}
+        open={openDetail}
+        onOpenChange={setOpenDetail}
+      />
     </div>
   );
 }

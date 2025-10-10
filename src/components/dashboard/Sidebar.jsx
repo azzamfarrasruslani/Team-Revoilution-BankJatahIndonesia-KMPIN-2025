@@ -12,6 +12,7 @@ import {
   Gift,
   Layers,
   LogOut,
+  QrCode,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { supabase } from "@/lib/supabaseClient";
@@ -32,6 +33,12 @@ export default function Sidebar({ sidebarOpen, onClose, role, session }) {
       href: "/dashboard",
       exact: true,
       roles: ["admin", "unit_bisnis", "pelanggan"],
+    },
+    {
+      label: "QR Setoran Minyak",
+      icon: QrCode,
+      href: "/dashboard/pelanggan/setor",
+      roles: ["pelanggan"],
     },
     {
       label: "Setor Minyak",
@@ -77,9 +84,9 @@ export default function Sidebar({ sidebarOpen, onClose, role, session }) {
     },
     {
       label: "Kelola User",
-      icon: Users, // Bisa gunakan icon lain jika mau
+      icon: Users,
       href: "/dashboard/admin/users",
-      roles: ["admin"], // Hanya terlihat untuk admin
+      roles: ["admin"],
     },
   ];
 
