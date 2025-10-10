@@ -51,34 +51,38 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-7xl bg-white shadow-lg rounded-xl grid grid-cols-1 md:grid-cols-2 overflow-hidden">
-        
-        {/* Left side - gambar */}
+    <div className="min-h-screen w-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-orange-100">
+      <div className="w-full max-w-6xl grid md:grid-cols-2 bg-white/70 backdrop-blur-sm shadow-2xl rounded-2xl overflow-hidden border border-orange-100">
+
+        {/* Kiri - Gambar Hero */}
         <div className="hidden md:flex relative">
           <img
             src="/images/login.jpeg"
             alt="Ilustrasi Register"
             className="object-cover w-full h-full"
           />
-          <div className="absolute inset-0 bg-black/20 flex flex-col justify-center items-center text-center px-6">
-            <h2 className="text-3xl font-bold text-white drop-shadow-sm mb-2">
-              Selamat Datang!
+          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex flex-col justify-end items-center text-center pb-10 px-6">
+            <h2 className="text-3xl font-bold text-white mb-2 drop-shadow-md">
+              Bergabung Sekarang!
             </h2>
-            <p className="text-sm text-white max-w-xs drop-shadow-sm">
-              Bergabung dengan program Bank Minyak Jelantah untuk mendukung lingkungan yang lebih bersih.
+            <p className="text-sm text-white/90 max-w-sm">
+              Jadilah bagian dari perubahan — bantu kelola minyak jelantah menjadi energi ramah lingkungan.
             </p>
           </div>
         </div>
 
-        {/* Right side - form */}
-        <div className="p-8 md:p-12 flex flex-col justify-center">
-          <h1 className="text-3xl font-bold text-[#FB6B00] mb-2 text-center md:text-left">Daftar Peserta</h1>
-          <p className="text-sm text-gray-500 mb-6 text-center md:text-left">
-            Masukkan data diri Anda untuk mengikuti program Bank Jatah Indonesia.
-          </p>
+        {/* Kanan - Form Register */}
+        <div className="flex flex-col justify-center px-8 md:px-14 py-12 bg-white">
+          <div className="mb-8 text-center md:text-left">
+            <h1 className="text-3xl font-bold text-[#FB6B00]">
+              Daftar Akun Baru
+            </h1>
+            <p className="text-gray-500 text-sm mt-2">
+              Isi data Anda untuk bergabung dalam program Bank Jatah Indonesia.
+            </p>
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <InputField
               label="Nama Lengkap"
               name="nama"
@@ -118,22 +122,26 @@ export default function RegisterPage() {
               onChange={handleChange}
             />
 
-            {error && <p className="text-sm text-red-600">{error}</p>}
+            {error && (
+              <p className="text-sm text-red-600 text-center md:text-left">
+                {error}
+              </p>
+            )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-[#FB6B00] hover:bg-orange-600 text-white font-semibold py-2.5 rounded-lg transition-all"
+              className="w-full bg-[#FB6B00] hover:bg-orange-600 text-white font-semibold py-2.5 rounded-lg transition-all shadow-md hover:shadow-lg"
             >
-              {loading ? "Memproses..." : "Daftar"}
+              {loading ? "Memproses..." : "Daftar Sekarang"}
             </button>
           </form>
 
-          <p className="text-sm text-center text-gray-500 mt-6 md:text-left">
+          <p className="text-sm text-center text-gray-600 mt-8">
             Sudah punya akun?{" "}
             <a
               href="/auth/login"
-              className="text-[#FB6B00] font-medium hover:underline"
+              className="text-[#FB6B00] font-semibold hover:underline"
             >
               Masuk di sini
             </a>
