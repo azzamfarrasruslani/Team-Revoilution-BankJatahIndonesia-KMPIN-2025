@@ -1,51 +1,43 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
+import { useState, useEffect } from "react";
 import Sidebar from "@/components/dashboard/Sidebar";
 import Navbar from "@/components/dashboard/Navbar";
 import Breadcrumb from "@/components/dashboard/Breadcrumb";
+import { supabase } from "@/lib/supabaseClient";
 
-export default function DashboardLayout({ children }) {
-  const breadcrumbItems = ["Dashboard"];
-
+export default function DashboardLayout({ children, breadcrumbItems }) {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [session, setSession] = useState(null);
-  const [userRole, setUserRole] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false); // ✅ tambahkan ini
 
   useEffect(() => {
-    const getUserData = async () => {
+    const getSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      setSession(session);
-
-      if (session?.user) {
-        const { data: user } = await supabase
-          .from("users")
-          .select("role")
-          .eq("id", session.user.id)
-          .maybeSingle();
-        setUserRole(user?.role);
-      }
+      if (session) setSession(session);
     };
-
-    getUserData();
+    getSession();
   }, []);
 
-  return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Navbar */}
-      <Navbar session={session} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+  const role = session?.user?.user_metadata?.role || "pelanggan";
 
-      <div className="flex flex-1">
-        {/* Sidebar */}
+  return (
+    <div className="flex h-screen w-full bg-gray-50 overflow-hidden">
+      {/* Sidebar */}
+      {session && (
         <Sidebar
           session={session}
-          role={userRole}
+          role={role}
           sidebarOpen={sidebarOpen}
           onClose={() => setSidebarOpen(false)}
         />
+      )}
 
-        {/* Overlay untuk mode mobile */}
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Navbar berada di dalam main content */}
+        <Navbar session={session} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
+
+        {/* Overlay mobile */}
         {sidebarOpen && (
           <div
             className="fixed inset-0 bg-black/30 z-20 md:hidden"
@@ -53,12 +45,7 @@ export default function DashboardLayout({ children }) {
           />
         )}
 
-        {/* Konten utama */}
-        <main
-          className={`flex-1 p-6 transition-all duration-300 ${
-            sidebarOpen ? "blur-sm" : ""
-          } md:ml-64`}
-        >
+        <main className="flex-1 p-6 md:ml-64 overflow-y-auto">
           <Breadcrumb items={breadcrumbItems} />
           {children}
         </main>
