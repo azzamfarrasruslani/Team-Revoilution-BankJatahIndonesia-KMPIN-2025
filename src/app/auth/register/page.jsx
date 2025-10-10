@@ -1,151 +1,272 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabaseClient";
-import InputField from "@/components/form/InputField";
-import TextAreaField from "@/components/form/TextAreaField";
 
-export default function RegisterPage() {
+import { AlertCircleIcon, CheckCircle2Icon } from "lucide-react";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+
+// Reusable InputWithLabel
+function InputWithLabel({
+  label,
+  value,
+  onChange,
+  type = "text",
+  readOnly = false,
+}) {
+  return (
+    <div className="flex flex-col">
+      <label className="text-sm font-medium mb-1">{label}</label>
+      <Input
+        type={type}
+        value={value}
+        onChange={onChange}
+        readOnly={readOnly}
+      />
+    </div>
+  );
+}
+
+// Fungsi sederhana untuk mengecek kekuatan password
+function checkPasswordStrength(password) {
+  if (password.length < 6) return "Lemah";
+  if (
+    password.match(/[A-Z]/) &&
+    password.match(/[0-9]/) &&
+    password.length >= 8
+  )
+    return "Kuat";
+  return "Sedang";
+}
+
+// Register Form
+function RegisterForm({ onSuccess }) {
   const router = useRouter();
 
   const [form, setForm] = useState({
-    nama: "",
     email: "",
+    password: "",
+    confirmPassword: "",
+    nama: "",
     no_hp: "",
     alamat: "",
-    password: "",
+    role: "pelanggan",
   });
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [passwordStrength, setPasswordStrength] = useState("");
+  const [alert, setAlert] = useState({ type: "", message: "" });
 
-  const handleChange = (e) => {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  const handleChange = (key) => (e) => {
+    const value = e.target.value;
+    setForm((prev) => ({ ...prev, [key]: value }));
+    if (key === "password") setPasswordStrength(checkPasswordStrength(value));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    setError(null);
 
-    const { error } = await supabase.auth.signUp({
-      email: form.email,
-      password: form.password,
-      options: {
-        data: {
-          nama: form.nama,
-          no_hp: form.no_hp,
-          alamat: form.alamat,
-        },
-      },
-    });
-
-    if (error) {
-      setError(error.message);
-      setLoading(false);
+    if (form.password !== form.confirmPassword) {
+      setAlert({
+        type: "error",
+        message: "Password dan konfirmasi password tidak cocok!",
+      });
       return;
     }
 
-    router.push("/auth/login");
+    setLoading(true);
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: form.email,
+        password: form.password,
+      });
+
+      if (authError) {
+        setAlert({ type: "error", message: authError.message });
+        return; // jangan lanjut ke insert tabel users
+      }
+
+      const userId = authData.user.id;
+
+      const { error: userError } = await supabase.from("users").insert([
+        {
+          id: userId,
+          email: form.email,
+          nama: form.nama,
+          no_hp: form.no_hp,
+          alamat: form.alamat,
+          role: form.role,
+          qr_code_id: crypto.randomUUID(),
+          poin: 0,
+          status: "aktif",
+        },
+      ]);
+
+      if (userError) throw userError;
+
+      setAlert({
+        type: "success",
+        message: "Registrasi berhasil! Silakan login.",
+      });
+
+      onSuccess && onSuccess(authData.user);
+    } catch (err) {
+      setAlert({ type: "error", message: err.message });
+    }
   };
 
-  return (
-    <div className="min-h-screen w-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-white to-orange-100">
-      <div className="w-full max-w-6xl grid md:grid-cols-2 bg-white/70 backdrop-blur-sm shadow-2xl rounded-2xl overflow-hidden border border-orange-100">
+  // Auto-clear alert setelah 5 detik
+  useEffect(() => {
+    if (alert.message) {
+      const timer = setTimeout(() => setAlert({ type: "", message: "" }), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [alert]);
 
-        {/* Kiri - Gambar Hero */}
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-4 w-full max-w-2xl"
+    >
+      {/* Alert */}
+      {alert.message && (
+        <Alert
+          variant={alert.type === "error" ? "destructive" : "default"}
+          className="mb-4"
+        >
+          {alert.type === "error" ? <AlertCircleIcon /> : <CheckCircle2Icon />}
+          <AlertTitle>
+            {alert.type === "error" ? "Terjadi Kesalahan" : "Sukses"}
+          </AlertTitle>
+          <AlertDescription>{alert.message}</AlertDescription>
+        </Alert>
+      )}
+
+      {/* Baris 1: Nama & Email */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <InputWithLabel
+          label="Nama"
+          value={form.nama}
+          onChange={handleChange("nama")}
+        />
+        <InputWithLabel
+          label="Email"
+          type="email"
+          value={form.email}
+          onChange={handleChange("email")}
+        />
+      </div>
+
+      {/* Baris 2: No HP */}
+      <InputWithLabel
+        label="No HP"
+        value={form.no_hp}
+        onChange={handleChange("no_hp")}
+      />
+
+      {/* Baris 3: Alamat */}
+      <InputWithLabel
+        label="Alamat"
+        value={form.alamat}
+        onChange={handleChange("alamat")}
+      />
+
+      {/* Baris 4: Password & Konfirmasi */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex flex-col">
+          <InputWithLabel
+            label="Password"
+            type="password"
+            value={form.password}
+            onChange={handleChange("password")}
+          />
+          {form.password && (
+            <p
+              className={`text-sm font-medium mt-1 ${
+                passwordStrength === "Kuat"
+                  ? "text-green-600"
+                  : passwordStrength === "Sedang"
+                  ? "text-yellow-500"
+                  : "text-red-600"
+              }`}
+            >
+              Kekuatan Password: {passwordStrength}
+            </p>
+          )}
+        </div>
+        <InputWithLabel
+          label="Konfirmasi Password"
+          type="password"
+          value={form.confirmPassword}
+          onChange={handleChange("confirmPassword")}
+        />
+      </div>
+
+      {/* Tombol Register */}
+      <Button type="submit" disabled={loading} className="mt-4">
+        {loading ? "Mendaftar..." : "Register"}
+      </Button>
+
+      {/* Link Login */}
+      <div className="text-center mt-4">
+        <p className="text-sm text-gray-500">
+          Sudah punya akun?{" "}
+          <button
+            type="button"
+            onClick={() => router.push("/auth/login")}
+            className="text-[#FB6B00] font-medium hover:underline"
+          >
+            Masuk di sini
+          </button>
+        </p>
+      </div>
+    </form>
+  );
+}
+
+// Halaman RegisterPage lengkap
+export default function RegisterPage() {
+  const router = useRouter();
+
+  return (
+    <div className="min-h-screen min-w-screen flex items-center justify-center bg-orange-50 p-4">
+      <div className="w-full max-w-6xl grid md:grid-cols-2 rounded-3xl overflow-hidden shadow-2xl bg-white border border-orange-100">
+        {/* Gambar kiri */}
         <div className="hidden md:flex relative">
           <img
-            src="/images/login.jpeg"
-            alt="Ilustrasi Register"
+            src="/images/register.jpeg"
+            alt="Register"
             className="object-cover w-full h-full"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent flex flex-col justify-end items-center text-center pb-10 px-6">
-            <h2 className="text-3xl font-bold text-white mb-2 drop-shadow-md">
-              Bergabung Sekarang!
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent flex flex-col justify-end p-10">
+            <h2 className="text-3xl font-bold text-white mb-2">
+              Bergabunglah dengan Kami!
             </h2>
-            <p className="text-sm text-white/90 max-w-sm">
-              Jadilah bagian dari perubahan — bantu kelola minyak jelantah menjadi energi ramah lingkungan.
+            <p className="text-sm text-gray-200 max-w-xs">
+              Daftar untuk mulai menyetor minyak jelantah dan dukung lingkungan
+              lebih bersih.
             </p>
           </div>
         </div>
 
-        {/* Kanan - Form Register */}
-        <div className="flex flex-col justify-center px-8 md:px-14 py-12 bg-white">
-          <div className="mb-8 text-center md:text-left">
-            <h1 className="text-3xl font-bold text-[#FB6B00]">
-              Daftar Akun Baru
+        {/* Form kanan */}
+        <div className="p-8 md:p-10 flex flex-col justify-center">
+          {/* Header */}
+          <div className="mb-6 text-center md:text-left">
+            <h1 className="text-3xl md:text-4xl font-bold text-[#FB6B00] mb-2">
+              Buat Akun Baru 👋
             </h1>
-            <p className="text-gray-500 text-sm mt-2">
-              Isi data Anda untuk bergabung dalam program Bank Jatah Indonesia.
+            <p className="text-gray-600 md:text-base">
+              Daftar sekarang untuk mulai menyetor minyak jelantah dan dukung
+              lingkungan lebih bersih.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <InputField
-              label="Nama Lengkap"
-              name="nama"
-              placeholder="Masukkan nama Anda"
-              value={form.nama}
-              onChange={handleChange}
-            />
-            <InputField
-              label="Email"
-              name="email"
-              type="email"
-              placeholder="nama@email.com"
-              value={form.email}
-              onChange={handleChange}
-            />
-            <InputField
-              label="No. HP"
-              name="no_hp"
-              type="tel"
-              placeholder="08xxxxxxxxxx"
-              value={form.no_hp}
-              onChange={handleChange}
-            />
-            <TextAreaField
-              label="Alamat Lengkap"
-              name="alamat"
-              placeholder="Tulis alamat lengkap di sini"
-              value={form.alamat}
-              onChange={handleChange}
-            />
-            <InputField
-              label="Password"
-              name="password"
-              type="password"
-              placeholder="••••••••"
-              value={form.password}
-              onChange={handleChange}
-            />
-
-            {error && (
-              <p className="text-sm text-red-600 text-center md:text-left">
-                {error}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-[#FB6B00] hover:bg-orange-600 text-white font-semibold py-2.5 rounded-lg transition-all shadow-md hover:shadow-lg"
-            >
-              {loading ? "Memproses..." : "Daftar Sekarang"}
-            </button>
-          </form>
-
-          <p className="text-sm text-center text-gray-600 mt-8">
-            Sudah punya akun?{" "}
-            <a
-              href="/auth/login"
-              className="text-[#FB6B00] font-semibold hover:underline"
-            >
-              Masuk di sini
-            </a>
-          </p>
+          {/* Form */}
+          <RegisterForm onSuccess={() => router.push("/auth/login")} />
         </div>
       </div>
     </div>

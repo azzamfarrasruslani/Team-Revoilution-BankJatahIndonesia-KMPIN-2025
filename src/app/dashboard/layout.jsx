@@ -7,45 +7,69 @@ import Breadcrumb from "@/components/dashboard/Breadcrumb";
 import { supabase } from "@/lib/supabaseClient";
 
 export default function DashboardLayout({ children, breadcrumbItems }) {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [session, setSession] = useState(null);
+  const [role, setRole] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const getSession = async () => {
+    const getUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (session) setSession(session);
+      if (session) {
+        setSession(session);
+        // Ambil role langsung dari tabel users
+        const { data: user } = await supabase.from("users").select("role").eq("id", session.user.id).maybeSingle();
+        setRole(user?.role || "pelanggan");
+      }
+      setLoading(false);
     };
-    getSession();
+
+    getUser();
   }, []);
 
-  const role = session?.user?.user_metadata?.role || "pelanggan";
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-4 border-orange-500 border-t-transparent"></div>
+    </div>
+  );
 
   return (
     <div className="flex h-screen w-full bg-gray-50 overflow-hidden">
-      {/* Sidebar */}
-      {session && (
-        <Sidebar
-          session={session}
-          role={role}
-          sidebarOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-        />
+      {/* Sidebar desktop jadi bagian flex */}
+      {session && role && (
+        <div className="hidden md:flex flex-shrink-0 w-64">
+          <Sidebar
+            session={session}
+            role={role}
+            sidebarOpen={sidebarOpen}
+            onClose={() => setSidebarOpen(false)}
+          />
+        </div>
       )}
 
-      {/* Main Content */}
+      {/* Main content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Navbar berada di dalam main content */}
+        {/* Navbar */}
         <Navbar session={session} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
-        {/* Overlay mobile */}
+        {/* Sidebar mobile overlay */}
         {sidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black/30 z-20 md:hidden"
-            onClick={() => setSidebarOpen(false)}
-          />
+          <div className="fixed inset-0 z-40 md:hidden flex">
+            <Sidebar
+              session={session}
+              role={role}
+              sidebarOpen={sidebarOpen}
+              onClose={() => setSidebarOpen(false)}
+            />
+            <div
+              className="flex-1 bg-black/30"
+              onClick={() => setSidebarOpen(false)}
+            />
+          </div>
         )}
 
-        <main className="flex-1 p-6 md:ml-64 overflow-y-auto">
+        {/* Konten utama */}
+        <main className="flex-1 p-6 overflow-y-auto">
           <Breadcrumb items={breadcrumbItems} />
           {children}
         </main>

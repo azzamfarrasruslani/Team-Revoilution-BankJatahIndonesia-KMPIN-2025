@@ -42,11 +42,10 @@ export default function LoginPage() {
       return;
     }
 
-    // Redirect ke dashboard, role sudah di user_metadata
     router.push("/dashboard");
   };
 
-  // 🔑 Login Google + simpan role default "pelanggan"
+  // 🔑 Login Google → redirect ke /auth/callback
   const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
@@ -87,7 +86,7 @@ export default function LoginPage() {
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="space-y-5">
+          <CardContent className="space-y-5 p-0">
             <form onSubmit={handleLogin} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="email">Email</Label>
@@ -138,6 +137,20 @@ export default function LoginPage() {
             >
               <FcGoogle size={22} /> Masuk dengan Google
             </Button>
+
+            {/* Tambahkan di bawah tombol login & tombol Google */}
+            <div className="text-center mt-4">
+              <p className="text-sm text-gray-500">
+                Belum punya akun?{" "}
+                <button
+                  type="button"
+                  onClick={() => router.push("/auth/register")}
+                  className="text-[#FB6B00] font-medium hover:underline"
+                >
+                  Daftar di sini
+                </button>
+              </p>
+            </div>
           </CardContent>
         </div>
       </Card>
