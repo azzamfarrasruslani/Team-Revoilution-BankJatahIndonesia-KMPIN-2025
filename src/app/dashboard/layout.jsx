@@ -1,55 +1,64 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
-
 import Sidebar from "@/components/dashboard/Sidebar";
 import Navbar from "@/components/dashboard/Navbar";
 import Breadcrumb from "@/components/dashboard/Breadcrumb";
 
 export default function DashboardLayout({ children }) {
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [session, setSession] = useState(null);
+  const breadcrumbItems = ["Dashboard"];
 
-  const breadcrumbItems = ["Dashboard"]; // ❗️Kamu bisa update ini agar dinamis via props context/route
+  const [session, setSession] = useState(null);
+  const [userRole, setUserRole] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false); // ✅ tambahkan ini
 
   useEffect(() => {
-    const checkSession = async () => {
-      const { data, error } = await supabase.auth.getSession();
+    const getUserData = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setSession(session);
 
-      if (!data.session) {
-        router.replace("/login"); // 🔒 Redirect jika tidak login
-      } else {
-        setSession(data.session);
-        setLoading(false); // ✅ Login sukses, load layout
+      if (session?.user) {
+        const { data: user } = await supabase
+          .from("users")
+          .select("role")
+          .eq("id", session.user.id)
+          .maybeSingle();
+        setUserRole(user?.role);
       }
     };
 
-    checkSession();
-  }, [router]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-white text-gray-700">
-        Memuat dashboard...
-      </div>
-    );
-  }
+    getUserData();
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Navbar */}
-      <Navbar session={session} />
+      <Navbar session={session} onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
 
-      {/* Main area: sidebar + konten */}
       <div className="flex flex-1">
         {/* Sidebar */}
-        <Sidebar session={session} />
+        <Sidebar
+          session={session}
+          role={userRole}
+          sidebarOpen={sidebarOpen}
+          onClose={() => setSidebarOpen(false)}
+        />
 
-        {/* Main content */}
-        <main className="flex-1 p-6 ml-64">
+        {/* Overlay untuk mode mobile */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/30 z-20 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
+        {/* Konten utama */}
+        <main
+          className={`flex-1 p-6 transition-all duration-300 ${
+            sidebarOpen ? "blur-sm" : ""
+          } md:ml-64`}
+        >
           <Breadcrumb items={breadcrumbItems} />
           {children}
         </main>
