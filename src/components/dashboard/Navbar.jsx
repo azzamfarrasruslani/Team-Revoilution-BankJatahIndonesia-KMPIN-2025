@@ -1,52 +1,88 @@
+// Navbar.jsx
 "use client";
 
-import { Bell, User, Search, HelpCircle, Settings, MessageCircle, Grid } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Bell,
+  User,
+  Search,
+  HelpCircle,
+  Settings,
+  MessageCircle,
+  Grid,
+  Menu,
+  ChevronDown,
+} from "lucide-react";
 
-export default function Navbar() {
+export default function Navbar({ session, onToggleSidebar }) {
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const getInitials = (name) => {
+    if (!name) return "A";
+    const names = name.split(" ");
+    const initials = names.map((n) => n[0].toUpperCase());
+    return initials.slice(0, 2).join("");
+  };
+
+  const userName = session?.user?.user_metadata?.nama || session?.user?.email;
+
   return (
-    <header className="bg-white shadow-md h-18 px-4 flex justify-between items-center ml-64">
-      {/* Bagian kiri: search + shortcut */}
-      <div className="flex items-center gap-4">
-        {/* Search Bar */}
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search..."
-            className="pl-8 pr-3 py-1 rounded-full border border-gray-300 text-sm focus:outline-none focus:ring-1 focus:ring-[#FB6B00] focus:border-[#FB6B00]"
-          />
-          <Search size={16} className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-400" />
-        </div>
+    <header className="bg-white shadow-md h-16 px-4 flex items-center justify-between">
+      {/* Hamburger untuk Mobile */}
+     <button
+  className="md:hidden p-2 rounded-md bg-[#FB6B00] text-white hover:bg-gray-800 transition"
+  onClick={onToggleSidebar}
+>
+  <Menu size={20} />
+</button>
 
-        {/* Shortcut Icons */}
-        <button className="p-2 rounded-full hover:bg-gray-100 transition">
-          <Grid size={18} className="text-gray-600" />
-        </button>
-        <button className="p-2 rounded-full hover:bg-gray-100 transition relative">
-          <MessageCircle size={18} className="text-gray-600" />
-          <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
-        <button className="p-2 rounded-full hover:bg-gray-100 transition">
-          <HelpCircle size={18} className="text-gray-600" />
-        </button>
+
+      {/* Bagian Kiri: Search dan Ikon */}
+      <div className="flex items-center gap-2 flex-1 overflow-hidden">
+        <div className="relative flex-1 hidden sm:block"></div>
       </div>
 
-      {/* Bagian kanan: notifikasi & profil user */}
-      <div className="flex items-center gap-3">
-        {/* Notifikasi */}
-        <button className="relative p-1 rounded-full hover:bg-gray-100 transition">
-          <Bell size={18} className="text-gray-600" />
-          <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
-        </button>
+      {/* Bagian Kanan: Notifikasi dan Profil */}
+      <div className="relative flex items-center gap-2 ml-2">
+        {/* Dropdown Profil */}
+        <div className="relative">
+          <button
+            className="flex items-center gap-1 hover:bg-gray-100 p-1 rounded-full transition"
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+          >
+            <div className="bg-[#FB6B00] text-white w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold">
+              {getInitials(userName)}
+            </div>
+            <span className="hidden sm:block text-sm text-gray-700 font-medium truncate max-w-[100px]">
+              {userName}
+            </span>
+            <ChevronDown size={14} className="text-gray-500" />
+          </button>
 
-        {/* Pengaturan */}
-        <button className="p-1 rounded-full hover:bg-gray-100 transition">
-          <Settings size={18} className="text-gray-600" />
-        </button>
-
-        {/* Profil User */}
-        <div className="flex items-center gap-1 cursor-pointer hover:bg-gray-100 transition rounded-full p-1">
-          <User size={20} className="text-gray-600" />
-          <span className="text-gray-700 font-medium text-sm truncate">Admin</span>
+          <AnimatePresence>
+            {dropdownOpen && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-50 border"
+              >
+                <ul className="text-sm text-gray-700">
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                    Profil
+                  </li>
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                    Pengaturan
+                  </li>
+                  <li className="px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                    Keluar
+                  </li>
+                </ul>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </header>
