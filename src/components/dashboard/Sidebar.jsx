@@ -37,14 +37,14 @@ export default function Sidebar({ sidebarOpen, onClose, role, session }) {
     {
       label: "QR Setoran Minyak",
       icon: QrCode,
-      href: "/dashboard/pelanggan/setor",
+      href: "/dashboard/pelanggan/setor-minyak",
       roles: ["pelanggan"],
     },
     {
       label: "Setor Minyak",
       icon: UploadCloud,
       href: "/dashboard/unit_bisnis/setor-minyak",
-      roles: ["unit_bisnis", "admin"],
+      roles: ["unit_bisnis"],
     },
     {
       label: "Wallet",
@@ -67,7 +67,7 @@ export default function Sidebar({ sidebarOpen, onClose, role, session }) {
     {
       label: "Tukar Poin",
       icon: Gift,
-      href: "/dashboard/tukar-poin",
+      href: "/dashboard/pelanggan/tukar-poin",
       roles: ["pelanggan"],
     },
     {
@@ -83,13 +83,13 @@ export default function Sidebar({ sidebarOpen, onClose, role, session }) {
       roles: ["unit_bisnis", "pelanggan"],
     },
     {
-      label: "Kelola User",
+      label: "User",
       icon: Users,
       href: "/dashboard/admin/users",
       roles: ["admin"],
     },
     {
-      label: "Kelola Setoran Minyak",
+      label: "Setoran Minyak",
       icon: Layers, 
       href: "/dashboard/admin/setoran",
       roles: ["admin"],
