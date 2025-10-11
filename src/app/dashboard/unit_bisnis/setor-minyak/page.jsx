@@ -37,20 +37,41 @@ export default function SetorMinyakUnitPage() {
       if (!pelanggan)
         throw new Error("QR tidak valid atau pelanggan tidak ditemukan.");
 
+      // Hitung poin
+      const poinDiberikan = Math.floor(parseFloat(volume) * 10);
+
       // Simpan ke tabel setoran
-      const { error } = await supabase.from("setoran").insert([
-        {
-          pelanggan_id: pelanggan.id,
-          unit_id: user.id,
-          volume_liter: parseFloat(volume),
-          status: "pending",
-          poin_diberikan: Math.floor(volume * 10),
-          topup_unit: 0,
-        },
-      ]);
+      const { data: setoranData, error } = await supabase
+        .from("setoran")
+        .insert([
+          {
+            pelanggan_id: pelanggan.id,
+            unit_id: user.id,
+            volume_liter: parseFloat(volume),
+            status: "pending",
+            poin_diberikan: poinDiberikan,
+            topup_unit: 0,
+          },
+        ])
+        .select(); // agar bisa ambil ID setoran
 
       if (error) throw error;
 
+      // Masukkan ke poin_history
+      const setoranId = setoranData[0].id;
+      const { error: poinError } = await supabase.from("poin_history").insert([
+        {
+          user_id: pelanggan.id,
+          setoran_id: setoranId,
+          poin: poinDiberikan,
+          tipe: "dapat",
+          keterangan: "Poin dari setoran minyak",
+        },
+      ]);
+
+      if (poinError) console.error("Gagal insert poin_history:", poinError);
+
+      // Reset form dan beri feedback
       setSubmitted(true);
       setVolume("");
       setPelangganId("");

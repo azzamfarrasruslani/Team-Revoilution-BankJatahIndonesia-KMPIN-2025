@@ -48,6 +48,12 @@ export default function Sidebar({ sidebarOpen, onClose, role, session }) {
       roles: ["unit_bisnis"],
     },
     {
+      label: "Riwayat Setoran",
+      icon: Layers, 
+      href: "/dashboard/unit_bisnis/riwayat-setoran",
+      roles: ["unit_bisnis"],
+    },
+    {
       label: "Wallet",
       icon: Wallet,
       href: "/dashboard/wallet",
@@ -91,13 +97,13 @@ export default function Sidebar({ sidebarOpen, onClose, role, session }) {
     },
     {
       label: "Setoran Minyak",
-      icon: Layers, 
+      icon: Layers,
       href: "/dashboard/admin/setoran",
       roles: ["admin"],
     },
     {
       label: "Produk",
-      icon: Package, 
+      icon: Package,
       href: "/dashboard/admin/produk",
       roles: ["admin"],
     },
