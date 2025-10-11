@@ -2,21 +2,10 @@
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  Home,
-  UploadCloud,
-  Wallet,
-  Users,
-  ShieldCheck,
-  HelpCircle,
-  Gift,
-  Layers,
-  LogOut,
-  QrCode,
-  Package,
-} from "lucide-react";
 import Logo from "@/components/Logo";
 import { supabase } from "@/lib/supabaseClient";
+import { LogOut } from "lucide-react";
+import { menuItems } from "./sidebarMenuItems"; // <-- import menuItems
 
 export default function Sidebar({ sidebarOpen, onClose, role, session }) {
   const pathname = usePathname();
@@ -26,90 +15,6 @@ export default function Sidebar({ sidebarOpen, onClose, role, session }) {
     await supabase.auth.signOut();
     router.replace("/auth/login");
   };
-
-  const menuItems = [
-    {
-      label: "Beranda",
-      icon: Home,
-      href: "/dashboard",
-      exact: true,
-      roles: ["admin", "unit_bisnis", "pelanggan"],
-    },
-    {
-      label: "QR Setoran Minyak",
-      icon: QrCode,
-      href: "/dashboard/pelanggan/setor-minyak",
-      roles: ["pelanggan"],
-    },
-    {
-      label: "Setor Minyak",
-      icon: UploadCloud,
-      href: "/dashboard/unit_bisnis/setor-minyak",
-      roles: ["unit_bisnis"],
-    },
-    {
-      label: "Riwayat Setoran",
-      icon: Layers, 
-      href: "/dashboard/unit_bisnis/riwayat-setoran",
-      roles: ["unit_bisnis"],
-    },
-    {
-      label: "Wallet",
-      icon: Wallet,
-      href: "/dashboard/wallet",
-      roles: ["pelanggan"],
-    },
-    {
-      label: "Mitra",
-      icon: Users,
-      href: "/dashboard/mitra",
-      roles: ["pelanggan"],
-    },
-    // {
-    //   label: "Validasi",
-    //   icon: ShieldCheck,
-    //   href: "/dashboard/validasi",
-    //   roles: ["admin", "unit_bisnis"],
-    // },
-    {
-      label: "Tukar Poin",
-      icon: Gift,
-      href: "/dashboard/pelanggan/tukar-poin",
-      roles: ["pelanggan"],
-    },
-    {
-      label: "Program Jelantah",
-      icon: Layers,
-      href: "/dashboard/program-jelantah",
-      roles: ["pelanggan", "unit_bisnis"],
-    },
-    {
-      label: "Bantuan",
-      icon: HelpCircle,
-      href: "/dashboard/bantuan",
-      roles: ["unit_bisnis", "pelanggan"],
-    },
-    {
-      label: "User",
-      icon: Users,
-      href: "/dashboard/admin/users",
-      roles: ["admin"],
-    },
-    {
-      label: "Setoran Minyak",
-      icon: Layers,
-      href: "/dashboard/admin/setoran",
-      roles: ["admin"],
-    },
-    {
-      label: "Produk",
-      icon: Package,
-      href: "/dashboard/admin/produk",
-      roles: ["admin"],
-    },
-  ];
-
-  const logoutItem = { label: "Keluar", icon: LogOut, href: "/logout" };
 
   const renderNavItem = (item, isLogout = false) => {
     const Icon = item.icon;
@@ -157,7 +62,6 @@ export default function Sidebar({ sidebarOpen, onClose, role, session }) {
   );
   const userName = session?.user?.nama || session?.user?.email || "User";
 
-  // Potong email/nama terlalu panjang
   const displayName =
     userName.length > 15 ? userName.slice(0, 15) + "..." : userName;
 
@@ -172,7 +76,6 @@ export default function Sidebar({ sidebarOpen, onClose, role, session }) {
           {filteredMenuItems.map((item) => renderNavItem(item))}
         </nav>
 
-        {/* User info + Logout di bawah sidebar */}
         <div className="px-4 py-4 border-t border-gray-200 flex flex-col gap-2">
           <ConfirmDialog
             trigger={
@@ -188,19 +91,6 @@ export default function Sidebar({ sidebarOpen, onClose, role, session }) {
               router.replace("/auth/login");
             }}
           />
-
-          {/* Info user */}
-          <div className="flex items-center gap-2">
-            <div className="bg-[#FB6B00] text-white w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold">
-              {displayName.slice(0, 2).toUpperCase()}
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-medium">{displayName}</span>
-              <span className="text-xs text-gray-400 capitalize">
-                {role || "pelanggan"}
-              </span>
-            </div>
-          </div>
         </div>
       </aside>
 
@@ -216,20 +106,6 @@ export default function Sidebar({ sidebarOpen, onClose, role, session }) {
         <nav className="flex-1 px-4 py-4 overflow-y-auto">
           {filteredMenuItems.map((item) => renderNavItem(item))}
         </nav>
-        <div className="px-4 py-4 border-t border-gray-200 flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <div className="bg-[#FB6B00] text-white w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold">
-              {displayName.slice(0, 2).toUpperCase()}
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-medium">{displayName}</span>
-              <span className="text-xs text-gray-400 capitalize">
-                {role || "pelanggan"}
-              </span>
-            </div>
-          </div>
-          {renderNavItem(logoutItem, true)}
-        </div>
       </aside>
     </>
   );
