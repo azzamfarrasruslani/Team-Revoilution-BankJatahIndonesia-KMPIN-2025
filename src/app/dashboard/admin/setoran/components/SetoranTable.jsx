@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { Eye, Edit, Trash2 } from "lucide-react";
+import { Eye } from "lucide-react";
 import ModalDetail from "./ModalDetail";
 import Badge from "./Badge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +12,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@/components/ui/dropdown-menu";
-
 
 export default function SetoranTable() {
   const [data, setData] = useState([]);
@@ -24,23 +23,24 @@ export default function SetoranTable() {
 
   const fetchSetoran = async () => {
     setLoading(true);
-    const { data, error } = await supabase
+    const { data: setoranData, error } = await supabase
       .from("setoran")
       .select(
         `
-        id,
-        volume_liter,
-        status,
-        poin_diberikan,
-        topup_unit,
-        created_at,
-        pelanggan:users!setoran_pelanggan_id_fkey (id, nama),
-        unit:users!setoran_unit_id_fkey (id, nama)
-      `
+    id,
+    volume_liter,
+    status,
+    poin_diberikan,
+    topup_unit,
+    created_at,
+    pelanggan:users(id, nama),
+    unit:users(id, nama)
+  `
       )
       .order("created_at", { ascending: false });
+
     if (error) console.error("Error fetching setoran:", error);
-    else setData(data);
+    else setData(setoranData || []);
     setLoading(false);
   };
 
@@ -78,22 +78,57 @@ export default function SetoranTable() {
     }
   };
 
-  // Update status langsung
   const handleUpdateStatus = async (id, newStatus) => {
-    const { error } = await supabase
-      .from("setoran")
-      .update({ status: newStatus })
-      .eq("id", id);
-    if (error) return alert("Gagal update status: " + error.message);
-    fetchSetoran();
-  };
+    try {
+      // Ambil setoran terkait
+      const { data: setoran, error: fetchError } = await supabase
+        .from("setoran")
+        .select("id, pelanggan_id, unit_id, topup_unit, status")
+        .eq("id", id)
+        .maybeSingle();
+      if (fetchError) throw fetchError;
+      if (!setoran) throw new Error("Setoran tidak ditemukan");
 
-  // Hapus setoran
-  const handleDelete = async (id) => {
-    if (!confirm("Apakah yakin ingin menghapus setoran ini?")) return;
-    const { error } = await supabase.from("setoran").delete().eq("id", id);
-    if (error) return alert("Gagal menghapus: " + error.message);
-    fetchSetoran();
+      // Update status setoran
+      const { error: updateError } = await supabase
+        .from("setoran")
+        .update({ status: newStatus })
+        .eq("id", id);
+      if (updateError) throw updateError;
+
+      // Jika diterima, update saldo pelanggan & kurangi saldo deposit unit
+      if (newStatus === "diterima") {
+        // Update saldo pelanggan
+        const { data: walletPelanggan } = await supabase
+          .from("wallet")
+          .select("saldo_real")
+          .eq("user_id", setoran.pelanggan_id)
+          .maybeSingle();
+        const newSaldoPelanggan =
+          (walletPelanggan?.saldo_real || 0) + setoran.topup_unit;
+        await supabase
+          .from("wallet")
+          .update({ saldo_real: newSaldoPelanggan })
+          .eq("user_id", setoran.pelanggan_id);
+
+        // Kurangi saldo deposit unit bisnis
+        const { data: walletUnit } = await supabase
+          .from("wallet")
+          .select("saldo_deposit")
+          .eq("user_id", setoran.unit_id)
+          .maybeSingle();
+        const newSaldoDeposit =
+          (walletUnit?.saldo_deposit || 0) - setoran.topup_unit;
+        await supabase
+          .from("wallet")
+          .update({ saldo_deposit: newSaldoDeposit })
+          .eq("user_id", setoran.unit_id);
+      }
+
+      fetchSetoran();
+    } catch (err) {
+      alert("Gagal update status: " + (err?.message || JSON.stringify(err)));
+    }
   };
 
   return (
@@ -115,7 +150,7 @@ export default function SetoranTable() {
         ))}
       </div>
 
-      {/* Tabel */}
+      {/* Table */}
       <div className="overflow-x-auto rounded-2xl shadow-lg border border-gray-200 bg-white">
         {loading ? (
           <div className="p-6 text-center text-gray-500">Memuat data...</div>
@@ -171,17 +206,24 @@ export default function SetoranTable() {
                             <Eye size={14} /> Detail
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => handleUpdateStatus(row.id, "diterima")}
+                            onClick={() =>
+                              handleUpdateStatus(row.id, "diterima")
+                            }
                           >
                             Terima
                           </DropdownMenuItem>
                           <DropdownMenuItem
-                            onClick={() => handleUpdateStatus(row.id, "ditolak")}
+                            onClick={() =>
+                              handleUpdateStatus(row.id, "ditolak")
+                            }
                           >
                             Tolak
                           </DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => handleDelete(row.id)}>
-                            <Trash2 size={14} /> Hapus
+                          <DropdownMenuItem
+                            onClick={() => handleDelete(row.id)}
+                            className="text-red-600"
+                          >
+                            Hapus
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -195,7 +237,7 @@ export default function SetoranTable() {
       </div>
 
       {selected && (
-        <ModalDetail row={selected} onClose={() => setSelected(null)} />
+        <ModalDetail setoran={selected} onClose={() => setSelected(null)} />
       )}
     </div>
   );

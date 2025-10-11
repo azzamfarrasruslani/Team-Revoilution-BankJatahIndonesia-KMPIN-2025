@@ -39,10 +39,22 @@ export const menuItems = [
     roles: ["unit_bisnis"],
   },
   {
-    label: "Wallet",
+    label: "Wallet Pelanggan",
     icon: CreditCard, 
-    href: "/dashboard/wallet",
+    href: "/dashboard/pelanggan/wallet",
     roles: ["pelanggan"],
+  },
+  {
+    label: "Wallet Unit Bisnis",
+    icon: CreditCard, 
+    href: "/dashboard/unit_bisnis/wallet",
+    roles: ["unit_bisnis"],
+  },
+  {
+    label: "Wallet Admin",
+    icon: CreditCard, 
+    href: "/dashboard/admin/wallet",
+    roles: ["admin"],
   },
   {
     label: "Daftar Unit Bisnis",
@@ -50,12 +62,6 @@ export const menuItems = [
     href: "/dashboard/pelanggan/unit-bisnis",
     roles: ["pelanggan"],
   },
-  // {
-  //   label: "Validasi",
-  //   icon: CheckCircle, // lebih representatif dari ShieldCheck
-  //   href: "/dashboard/validasi",
-  //   roles: ["admin", "unit_bisnis"],
-  // },
   {
     label: "Tukar Poin",
     icon: Gift, 

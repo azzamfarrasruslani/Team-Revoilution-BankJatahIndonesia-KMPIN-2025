@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import { supabase } from "@/lib/supabaseClient";
@@ -21,9 +21,13 @@ export default function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  // Hanya enable kode client
+  useEffect(() => setIsClient(true), []);
 
   const handleChange = (e) =>
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value || "" }));
 
   // 🔑 Login email/password
   const handleLogin = async (e) => {
@@ -47,6 +51,7 @@ export default function LoginPage() {
 
   // 🔑 Login Google → redirect ke /auth/callback
   const handleGoogleLogin = async () => {
+    if (!isClient) return;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: { redirectTo: `${window.location.origin}/auth/callback` },
@@ -59,18 +64,13 @@ export default function LoginPage() {
       <Card className="w-full max-w-5xl grid md:grid-cols-2 rounded-3xl overflow-hidden shadow-2xl bg-white border border-orange-100">
         {/* LEFT IMAGE */}
         <div className="hidden md:flex relative">
-          <img
-            src="/images/login.jpeg"
-            alt="Login"
-            className="object-cover w-full h-full"
-          />
+          <img src="/images/login.jpeg" alt="Login" className="object-cover w-full h-full" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent flex flex-col justify-end p-10">
             <h2 className="text-3xl font-bold text-white mb-2">
               Tukar Minyak, Selamatkan Bumi!
             </h2>
             <p className="text-sm text-gray-200 max-w-xs">
-              Login untuk mulai menyetor minyak jelantah dan dukung lingkungan
-              lebih bersih.
+              Login untuk mulai menyetor minyak jelantah dan dukung lingkungan lebih bersih.
             </p>
           </div>
         </div>
@@ -78,9 +78,7 @@ export default function LoginPage() {
         {/* RIGHT FORM */}
         <div className="p-8 md:p-10 flex flex-col justify-center bg-white">
           <CardHeader className="p-0 mb-6">
-            <CardTitle className="text-[#FB6B00] text-3xl font-bold">
-              Selamat Datang 👋
-            </CardTitle>
+            <CardTitle className="text-[#FB6B00] text-3xl font-bold">Selamat Datang 👋</CardTitle>
             <CardDescription className="text-gray-600">
               Masuk ke akun Anda untuk mengelola transaksi minyak jelantah.
             </CardDescription>
@@ -95,7 +93,7 @@ export default function LoginPage() {
                   name="email"
                   type="email"
                   placeholder="nama@email.com"
-                  value={form.email}
+                  value={form.email || ""}
                   onChange={handleChange}
                   required
                   className="rounded-xl border-gray-300 focus:ring-[#FB6B00]"
@@ -108,7 +106,7 @@ export default function LoginPage() {
                   name="password"
                   type="password"
                   placeholder="••••••••"
-                  value={form.password}
+                  value={form.password || ""}
                   onChange={handleChange}
                   required
                   className="rounded-xl border-gray-300 focus:ring-[#FB6B00]"
@@ -138,7 +136,6 @@ export default function LoginPage() {
               <FcGoogle size={22} /> Masuk dengan Google
             </Button>
 
-            {/* Tambahkan di bawah tombol login & tombol Google */}
             <div className="text-center mt-4">
               <p className="text-sm text-gray-500">
                 Belum punya akun?{" "}
