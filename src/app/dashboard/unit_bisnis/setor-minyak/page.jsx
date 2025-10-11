@@ -9,31 +9,51 @@ import { Html5Qrcode } from "html5-qrcode";
 
 export default function SetorMinyakUnitPage() {
   const [volume, setVolume] = useState("");
-  const [userId, setUserId] = useState("");
+  const [pelangganId, setPelangganId] = useState("");
   const [qrScan, setQrScan] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const qrRef = useRef(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!userId) return alert("User belum dipilih");
+    if (!pelangganId) return alert("Pelanggan belum dipilih");
 
     try {
+      // Ambil user aktif (unit bisnis)
+      const {
+        data: { user },
+        error: userError,
+      } = await supabase.auth.getUser();
+      if (userError || !user) throw new Error("Unit bisnis belum login");
+
+      // Cari pelanggan berdasarkan qr_code_id
+      const { data: pelanggan, error: pelangganError } = await supabase
+        .from("users")
+        .select("id")
+        .eq("qr_code_id", pelangganId)
+        .maybeSingle();
+
+      if (pelangganError) throw pelangganError;
+      if (!pelanggan)
+        throw new Error("QR tidak valid atau pelanggan tidak ditemukan.");
+
+      // Simpan ke tabel setoran
       const { error } = await supabase.from("setoran").insert([
         {
-          user_id: userId,
-          unit_id: supabase.auth.user()?.id,
+          pelanggan_id: pelanggan.id,
+          unit_id: user.id,
           volume_liter: parseFloat(volume),
           status: "pending",
           poin_diberikan: Math.floor(volume * 10),
           topup_unit: 0,
         },
       ]);
+
       if (error) throw error;
 
       setSubmitted(true);
       setVolume("");
-      setUserId("");
+      setPelangganId("");
       setTimeout(() => setSubmitted(false), 3000);
     } catch (err) {
       alert("Error: " + err.message);
@@ -42,24 +62,40 @@ export default function SetorMinyakUnitPage() {
 
   useEffect(() => {
     let html5QrCode;
+    let isActive = false;
+
     if (qrScan && qrRef.current) {
       html5QrCode = new Html5Qrcode("reader");
+
       html5QrCode
         .start(
           { facingMode: "environment" },
           { fps: 10, qrbox: 250 },
           (decodedText) => {
-            setUserId(decodedText);
-            html5QrCode.stop();
-            setQrScan(false);
+            if (!isActive) return;
+            setPelangganId(decodedText);
+
+            html5QrCode
+              .stop()
+              .then(() => {
+                isActive = false;
+                setQrScan(false);
+              })
+              .catch((err) => console.warn("Stop failed:", err));
           },
           (err) => console.log("Scan error:", err)
         )
-        .catch((err) => console.error(err));
+        .then(() => {
+          isActive = true;
+        })
+        .catch((err) => console.error("Start failed:", err));
     }
 
     return () => {
-      if (html5QrCode) html5QrCode.stop().catch(() => {});
+      if (html5QrCode && isActive) {
+        html5QrCode.stop().catch(() => {});
+        isActive = false;
+      }
     };
   }, [qrScan]);
 
@@ -130,13 +166,13 @@ export default function SetorMinyakUnitPage() {
 
         <div className="space-y-2 mt-2">
           <label className="text-sm font-medium">
-            Atau Masukkan QR Code ID
+            Atau Masukkan QR Code ID Pelanggan
           </label>
           <input
             type="text"
             placeholder="Scan atau input QR code ID"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
+            value={pelangganId}
+            onChange={(e) => setPelangganId(e.target.value)}
             className="w-full border px-3 py-2 rounded-lg"
           />
         </div>
@@ -166,10 +202,10 @@ export default function SetorMinyakUnitPage() {
           </div>
         )}
 
-        {userId && (
+        {pelangganId && (
           <div className="mt-6 p-4 border rounded-lg bg-gray-50">
             <p>
-              <strong>User ID:</strong> {userId}
+              <strong>Pelanggan ID:</strong> {pelangganId}
             </p>
             <p>
               <strong>Volume:</strong> {volume} liter

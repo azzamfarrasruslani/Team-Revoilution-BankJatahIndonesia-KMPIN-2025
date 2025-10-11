@@ -35,7 +35,7 @@ export default function AdminSetoranPage() {
 
   return (
     <div className="max-w-8xl mx-auto py-10 px-4 md:px-6 space-y-8">
-      <h1 className="text-3xl font-bold text-[#FB6B00] mb-6">Admin Setoran & Validasi</h1>
+      <h1 className="text-3xl font-bold text-[#FB6B00] mb-6">Kelola Setoran & Validasi</h1>
 
       {/* Statistik */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
