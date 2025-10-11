@@ -13,6 +13,7 @@ import {
   Layers,
   LogOut,
   QrCode,
+  Package,
 } from "lucide-react";
 import Logo from "@/components/Logo";
 import { supabase } from "@/lib/supabaseClient";
@@ -92,6 +93,12 @@ export default function Sidebar({ sidebarOpen, onClose, role, session }) {
       label: "Setoran Minyak",
       icon: Layers, 
       href: "/dashboard/admin/setoran",
+      roles: ["admin"],
+    },
+    {
+      label: "Produk",
+      icon: Package, 
+      href: "/dashboard/admin/produk",
       roles: ["admin"],
     },
   ];
